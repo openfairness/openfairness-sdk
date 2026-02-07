@@ -20,14 +20,15 @@ OpenFairness SDK offers developers two core services:
 ## 📦 Installation
 
 ### Maven Dependency
-
-
+#### Environment Requirements
+- Java 8+
+- Maven 3.6+
 
 ```
 <dependency>
     <groupId>com.openfairness</groupId>
     <artifactId>openfairness-sdk</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -35,9 +36,6 @@ OpenFairness SDK offers developers two core services:
 
 ### 1. Initialize the SDK
 
-#### Environment Requirements
-- Java 8+
-- Maven 3.6+
 ```java
 // Method 1: Quick initialization with AppId (using default configuration)
 OpenFairnessClient.build("your-app-id");
@@ -70,6 +68,31 @@ OpenFairnessClient.build(options);
 ### 3. Use Blind Box Allocation Service
 
 ```java
+try {
+    OpenFairnessClient.build(RequestOptions.builder()
+                    .appId("your-app-id").build());
+    BoxMockReq req = BoxMockReq.builder().boxPrice(new BigDecimal(80)).temType("win_or_nothing").winRate(new BigDecimal(0.3)).build();
+    List<BoxMockReq.BoxSku> skuList = new ArrayList<>();
+    String rawData = "4025,3910,3876,2800,2650,2400,2250,2100,1850," +
+        "1200,1100,950,808,750,690,600,514,488,450,400," +
+        "339,300,250,200,160,150,130,120,109,99,88,78," +
+        "60,51,45,38,29,25,18,12,8,5,1";
+    String[] arr = rawData.split(",");
+    int idx = 1;
+    for (String s : arr) {
+        BoxMockReq.BoxSku boxSku = new BoxMockReq.BoxSku();
+                boxSku.setSkuNo("SKU_" + idx);
+                boxSku.setGroupCode("SKU_" + idx);
+                boxSku.setPrice(new BigDecimal(s));
+        skuList.add(boxSku);
+        idx++;
+    }
+    req.setSkuList(skuList);
+    BoxMockResult result = OpenFairnessClient.boxMock(req);
+    System.out.println(JSON.toJSONString(result));
+} catch (Exception e) {
+    System.out.println(e.getMessage());
+}
 
 ```
 ## 🔧 API Documentation
