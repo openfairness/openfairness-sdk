@@ -1,1 +1,118 @@
-# openfairness-sdk
+
+# OpenFairness SDK
+
+A Java SDK providing blind box automatic allocation services and verifiable fairness algorithm unboxing services.
+
+## 🎯 Project Introduction
+
+OpenFairness SDK offers developers two core services:
+- **Blind Box Automatic Allocation Service** - Intelligently configures blind box contents with multiple allocation strategies
+- **Verifiable Fairness Algorithm Unboxing Service** - Ensures fairness and verifiability of unboxing process using cryptographic principles
+
+## ✨ Core Features
+
+- 🔒 **Verifiable Fairness** - Uses cryptographic algorithms to guarantee tamper-proof and verifiable unboxing results
+- 🎁 **Smart Box Allocation** - Supports multiple blind box configuration strategies for various business scenarios
+- 🚀 **Easy to Use** - Clean API design for quick integration into existing projects
+- 📦 **Lightweight** - Minimal dependencies, optimized package size
+- 🔧 **Highly Configurable** - Supports custom API endpoints, proxy configurations, and more
+
+## 📦 Installation
+
+### Maven Dependency
+
+
+
+```
+<dependency>
+    <groupId>com.openfairness</groupId>
+    <artifactId>openfairness-sdk</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+## 🚀 Quick Start
+
+### 1. Initialize the SDK
+
+#### Environment Requirements
+- Java 8+
+- Maven 3.6+
+```java
+// Method 1: Quick initialization with AppId (using default configuration)
+OpenFairnessClient.build("your-app-id");
+
+// Method 2: Initialize with complete configuration
+RequestOptions options = RequestOptions.builder()
+.apiUrl("https://api.openfairness.com")
+.appId("your-app-id")
+.build();
+OpenFairnessClient.build(options);
+```
+### 2. Use Fairness Unboxing Service
+
+
+```java
+    OpenFairnessClient.build(RequestOptions.builder()
+                    .appId("your-app-id").build());
+    OpenFairnessResult result = OpenFairnessClient.openFairness(OpenFairnessReq.builder()
+        .requestId(RandomStringUtils.randomAlphanumeric(32))
+        .nonce(1)
+        .boxDetails(Arrays.asList(
+            OpenFairnessReq.BoxDetail.builder().rangeStart(1).rangeEnd(5_000_000).build(),
+            OpenFairnessReq.BoxDetail.builder().rangeStart(5_000_001).rangeEnd(10_000_000).build(),
+            OpenFairnessReq.BoxDetail.builder().rangeStart(10_000_001).rangeEnd(50_000_000).build(),
+            OpenFairnessReq.BoxDetail.builder().rangeStart(50_000_001).rangeEnd(100_000_000).build()))
+                    .build());
+    System.out.println(JSON.toJSONString(result));
+```
+
+### 3. Use Blind Box Allocation Service
+
+```java
+
+```
+## 🔧 API Documentation
+
+### Core Classes
+
+#### OpenFairnessClient
+Main client class providing all service methods.
+
+**Main Methods:**
+- `build(RequestOptions)` - Initialize SDK
+- `build(String appId)` - Quick initialization with AppId
+- `openFairness(OpenFairnessReq)` - Fairness unboxing
+- `boxMock(BoxMockReq)` - Blind box allocation
+- `boxMockTypes()` - Get blind box type list
+
+#### RequestOptions
+Configuration options class supporting fluent interface.
+
+**Configuration Items:**
+- `apiUrl` - API service address (default: https://api.openfairness.com)
+- `appId` - Application identifier (required)
+- `proxyUrl` - Proxy address (optional)
+
+### Exception Handling
+
+All operations may throw `OpenFairnessException`, containing error code and message:
+
+```java
+try {
+    OpenFairnessResult result = OpenFairnessClient.openFairness(request);
+} catch (OpenFairnessException e) {
+    System.err.println("Error code: " + e.getCode());
+    System.err.println("Error message: " + e.getMessage());
+}
+```
+
+## 🛡️ Fairness Verification
+
+OpenFairness uses cryptographic hash algorithms to ensure fairness of unboxing results. Each unboxing result includes a verifiable hash that users can validate through:
+
+1. **Get Verification Info** - Obtain verification hash from unboxing result
+2. **Local Verification** - Use provided verification tools to validate result authenticity
+
+
+
