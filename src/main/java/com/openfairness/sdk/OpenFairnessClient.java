@@ -9,6 +9,7 @@ import com.openfairness.sdk.util.HttpUtils;
 import okhttp3.Headers;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class OpenFairnessClient {
@@ -32,21 +33,19 @@ public class OpenFairnessClient {
 
     public static OpenFairnessResult openFairness(OpenFairnessReq req, RequestOptions requestOptions) {
         validRequestOptions(requestOptions);
-        HttpResult result = HttpUtils.doPost(requestOptions.getApiUrl() + "/open_fairness",
-                new Headers.Builder()
-                        .add(BaseConstant.AUTHORIZATION, requestOptions.getAppId())
-                        .add(BaseConstant.PROXY_KEY, StringUtils.trimToEmpty(requestOptions.getProxyUrl()))
-                , req);
-        if (result.isSuccess()) {
-            return JSON.parseObject(result.getResponse(), new TypeReference<BaseRes<OpenFairnessResult>>() {
-            }).getData();
-        }
-        if (StringUtils.isNotBlank(result.getResponse())) {
-            BaseRes baseRes = JSON.parseObject(result.getResponse(), new TypeReference<BaseRes<OpenFairnessResult>>() {
-            });
-            throw new OpenFairnessException(baseRes.getCode(), baseRes.getMsg());
-        }
-        throw new OpenFairnessException(String.valueOf(result.getCode()), result.getMessage());
+        return doPost("/open_fairness", req, new TypeReference<BaseRes<OpenFairnessResult>>() {
+        });
+    }
+
+    public static MultiOpenFairnessResult multipleOpenFairness(MultiOpenFairnessReq req) {
+        return multipleOpenFairness(req, requestOptions);
+    }
+
+    public static MultiOpenFairnessResult multipleOpenFairness(MultiOpenFairnessReq req, RequestOptions requestOptions) {
+        validRequestOptions(requestOptions);
+        MultiOpenFairnessResult result = doPost("/multi_open_fairness", req,new TypeReference<BaseRes<MultiOpenFairnessResult>>() {
+        });
+        return result;
     }
 
     public static List<BoxMockTypesResult> boxMockTypes() {
@@ -55,20 +54,9 @@ public class OpenFairnessClient {
 
     public static List<BoxMockTypesResult> boxMockTypes(RequestOptions requestOptions) {
         validRequestOptions(requestOptions);
-        HttpResult result = HttpUtils.doGet(requestOptions.getApiUrl() + "/box_mock/type/list",
-                new Headers.Builder()
-                        .add(BaseConstant.AUTHORIZATION, requestOptions.getAppId())
-                        .add(BaseConstant.PROXY_KEY, StringUtils.trimToEmpty(requestOptions.getProxyUrl())));
-        if (result.isSuccess()) {
-            return JSON.parseObject(result.getResponse(), new TypeReference<BaseRes<List<BoxMockTypesResult>>>() {
-            }).getData();
-        }
-        if (StringUtils.isNotBlank(result.getResponse())) {
-            BaseRes baseRes = JSON.parseObject(result.getResponse(), new TypeReference<BaseRes<List<BoxMockTypesResult>>>() {
-            });
-            throw new OpenFairnessException(baseRes.getCode(), baseRes.getMsg());
-        }
-        throw new OpenFairnessException(String.valueOf(result.getCode()), result.getMessage());
+        List<BoxMockTypesResult> results = doGet("/box_mock/type/list", null, new TypeReference<BaseRes<List<BoxMockTypesResult>>>() {
+        });
+        return results;
     }
 
     public static BoxMockResult boxMock(BoxMockReq req) {
@@ -77,18 +65,38 @@ public class OpenFairnessClient {
 
     public static BoxMockResult boxMock(BoxMockReq req, RequestOptions requestOptions) {
         validRequestOptions(requestOptions);
-        HttpResult result = HttpUtils.doPost(requestOptions.getApiUrl() + "/box_mock/box_create",
+        BoxMockResult result = doPost("/box_mock/box_create", req, new TypeReference<BaseRes<BoxMockResult>>() {
+        });
+        return result;
+    }
+
+    private static <T> T doPost(String path, Object req, TypeReference<BaseRes<T>> type) {
+        HttpResult result = HttpUtils.doPost(requestOptions.getApiUrl() + path,
                 new Headers.Builder()
                         .add(BaseConstant.AUTHORIZATION, requestOptions.getAppId())
                         .add(BaseConstant.PROXY_KEY, StringUtils.trimToEmpty(requestOptions.getProxyUrl()))
                 , req);
         if (result.isSuccess()) {
-            return JSON.parseObject(result.getResponse(), new TypeReference<BaseRes<BoxMockResult>>() {
-            }).getData();
+            return JSON.parseObject(result.getResponse(), type).getData();
         }
         if (StringUtils.isNotBlank(result.getResponse())) {
-            BaseRes baseRes = JSON.parseObject(result.getResponse(), new TypeReference<BaseRes<BoxMockResult>>() {
-            });
+            BaseRes baseRes = JSON.parseObject(result.getResponse(), type);
+            throw new OpenFairnessException(baseRes.getCode(), baseRes.getMsg());
+        }
+        throw new OpenFairnessException(String.valueOf(result.getCode()), result.getMessage());
+    }
+
+    private static <T> T doGet(String path, Object req,TypeReference<BaseRes<T>> type) {
+        HttpResult result = HttpUtils.doGet(requestOptions.getApiUrl() + path,
+                new Headers.Builder()
+                        .add(BaseConstant.AUTHORIZATION, requestOptions.getAppId())
+                        .add(BaseConstant.PROXY_KEY, StringUtils.trimToEmpty(requestOptions.getProxyUrl()))
+                , req);
+        if (result.isSuccess()) {
+            return JSON.parseObject(result.getResponse(), type).getData();
+        }
+        if (StringUtils.isNotBlank(result.getResponse())) {
+            BaseRes baseRes = JSON.parseObject(result.getResponse(), type);
             throw new OpenFairnessException(baseRes.getCode(), baseRes.getMsg());
         }
         throw new OpenFairnessException(String.valueOf(result.getCode()), result.getMessage());

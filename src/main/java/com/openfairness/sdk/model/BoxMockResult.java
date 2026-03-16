@@ -27,6 +27,8 @@ public class BoxMockResult {
 
     private List<MockSku> skuList;
 
+    private BigDecimal boxPrice;
+
     @Data
     @AllArgsConstructor
     @Builder

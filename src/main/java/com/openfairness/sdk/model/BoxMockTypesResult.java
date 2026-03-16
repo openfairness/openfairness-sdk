@@ -2,6 +2,8 @@ package com.openfairness.sdk.model;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @Description
  * @author: Mi
@@ -13,4 +15,18 @@ public class BoxMockTypesResult {
     private String type;
 
     private String name;
+
+    private BigDecimal defaultWinRate;
+
+    private BigDecimal defaultMinProfitRate;
+
+    private BigDecimal defaultMaxProfitRate;
+
+    private BigDecimal defaultPMin;
+
+    private BigDecimal defaultPMax;
+
+    private String defaultProfitType;
+
+    private String remark;
 }
