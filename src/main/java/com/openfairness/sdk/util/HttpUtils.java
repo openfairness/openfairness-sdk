@@ -29,8 +29,8 @@ public class HttpUtils {
         String proxyUrl = param.getProxyUrl();
         OkHttpClient okHttpClient = clientMap.get(proxyUrl + "_" + param.getSsl());
         if (okHttpClient == null) {
-            OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS)
-                    .writeTimeout(60, TimeUnit.SECONDS).readTimeout(60, TimeUnit.SECONDS)
+            OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().connectTimeout(3, TimeUnit.SECONDS)
+                    .writeTimeout(5, TimeUnit.SECONDS).readTimeout(15, TimeUnit.SECONDS)
                     .retryOnConnectionFailure(true);
             if (StringUtils.isNotBlank(proxyUrl)) {
                 clientBuilder.proxy(new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(proxyUrl.split(":")[0], Integer.parseInt(proxyUrl.split(":")[1]))));
